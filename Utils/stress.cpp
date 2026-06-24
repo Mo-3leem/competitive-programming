@@ -24,8 +24,8 @@ void generate() {
 }
 
 int32_t main() {
-  system("g++ -lm -O3 -std=c++17 -DLOCAL -pipe -o main.exe ../main.cpp");
-  system("g++ -lm -O3 -std=c++17 -pipe -o brute.exe ../brute.cpp");
+  system("g++ -lm -O3 -std=c++17 -DLOCAL -pipe -o main.exe main.cpp");
+  system("g++ -lm -O3 -std=c++17 -pipe -o brute.exe brute.cpp");
 //  system("g++ -lm -O3 -std=c++17 -pipe -o gen.exe ../gen.cpp"); // run gen file ?
 
   for (int tc = 1; tc <= LIMIT; ++tc) {
