@@ -1,27 +1,16 @@
-const int N = 1e7 + 7;
-vector<int> prime;
-bitset<N> isComp;
-char mob[N];
-int lpf[N], gpf[N];
+// O(n*log(n))
+const int N = 1e5 + 10;
+bitset<N> bt;
+vector<pair<int, int>> adj[N];
 
-void sieve(int n = N) {
-  isComp = 0;
-  mob[1] = 1;
-  for (int i = 2; i < n; ++i) {
-    if (!isComp[i]) {
-      prime.push_back(i);
-      mob[i] = -1;
-      lpf[i] = gpf[i] = i;
-    }
-    for (int j = 0; j < prime.size() && i * prime[j] < n; ++j) {
-      isComp[i * prime[j]] = true;
-      lpf[prime[j] * i] = prime[j];
-      gpf[prime[j] * i] = gpf[i];
-      if (i % prime[j] == 0) {
-        mob[i * prime[j]] = 0;
-        break;
-      } else
-        mob[i * prime[j]] = mob[i] * mob[prime[j]];
+  bt.set();
+  bt[0] = bt[1] = 0;
+  for (int i = 2; i < N; i++) {
+    if (bt[i]) {
+      for (int j = i; j < N; j+=i) {
+        int cnt{}, tmp = j;
+        while (tmp % i == 0) tmp /= i, cnt++;
+        adj[j].emplace_back(i, cnt);
+      }
     }
   }
-}
