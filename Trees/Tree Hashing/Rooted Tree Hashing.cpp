@@ -24,7 +24,7 @@
 
 map<vector<int>, int> mp;
 
-void tree_hash(int u, int p, vector<int> &hash, vector<int> adj[]) {
+void tree_hash(int u, int p, vector<int> &hash, vector<vector<int>> &adj) {
     vector<int> child;
     for (auto &v : adj[u]) {
         if (v != p) {
