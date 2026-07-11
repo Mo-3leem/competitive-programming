@@ -1,3 +1,7 @@
+// Build	O(nm log n log m)
+// Query	O(1)
+// Space	O(nm log n log m)
+
 const int LG = 11;
 
 template<typename T, class CMP = function<T(const T &, const T &)>>
