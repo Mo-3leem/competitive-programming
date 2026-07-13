@@ -1,4 +1,5 @@
 // Smallest Prime Factor (SPF)
+// Must Call buildSPF()
 // Build: O(N log log N)
 // Factorization: O(log n)
 // Divisors: O(log n + number of divisors)
