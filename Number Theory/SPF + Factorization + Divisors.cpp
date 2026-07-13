@@ -1,15 +1,24 @@
+//==============================================================//
 // Smallest Prime Factor (SPF)
-// Must Call buildSPF()
-// Build: O(N log log N)
-// Factorization: O(log n)
-// Divisors: O(log n + number of divisors)
-// Space: O(N)
+//--------------------------------------------------------------//
+// Build:          O(N log log N)
+// Factorization:  O(log n)
+// Divisors:       O(log n + number of divisors)
+// Space:          O(N)
+//
+// Notes:
+// • Call buildSPF() ONCE before using factor() or divisors().
+// • Works only for numbers x < N.
+// • If n can be as large as 1e12 or 1e18, DON'T use SPF.
+//   Use O(sqrt(n)) factorization/divisor enumeration instead.
+//==============================================================//
 
 const int N = 1e6 + 5;
 int spf[N];
 
 void buildSPF() {
     iota(spf, spf + N, 0);
+
     for (int i = 2; i * i < N; i++)
         if (spf[i] == i)
             for (int j = i * i; j < N; j += i)
@@ -20,11 +29,14 @@ void buildSPF() {
 // return {{prime, exponent}, ...}
 vector<pair<int,int>> factor(int x) {
     vector<pair<int,int>> f;
+
     while (x > 1) {
         int p = spf[x], c = 0;
-        while (x % p == 0) x /= p, c++;
+        while (x % p == 0)
+            x /= p, c++;
         f.push_back({p, c});
     }
+
     return f;
 }
 
@@ -38,6 +50,7 @@ vector<int> divisors(int x) {
         while (x % p == 0) {
             x /= p;
             pw *= p;
+
             for (int i = 0; i < sz; i++)
                 d.push_back(d[i] * pw);
         }
