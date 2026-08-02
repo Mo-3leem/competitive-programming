@@ -1,9 +1,15 @@
 using ll = long long;
 
 const int MOD = 1e9 + 7;
-const int MAX = 2e6 + 5;      // Change according to constraints
+const int MAX = 2e6 + 5;          // For factorials
+const int NCR_MAX = 5000;         // Adjust according to memory
 
 ll fact[MAX], invFact[MAX];
+ll C[NCR_MAX + 1][NCR_MAX + 1];
+
+//==================================================
+// Fast Power
+//==================================================
 
 // O(log b)
 ll fastPower(ll a, ll b, ll mod = MOD) {
@@ -15,6 +21,10 @@ ll fastPower(ll a, ll b, ll mod = MOD) {
     }
     return res;
 }
+
+//==================================================
+// Factorials (Modulo)
+//==================================================
 
 // O(MAX)
 void initCombinatorics() {
@@ -28,7 +38,23 @@ void initCombinatorics() {
         invFact[i] = invFact[i + 1] * (i + 1) % MOD;
 }
 
-//==================== Without Mod ====================
+//==================================================
+// Pascal Triangle (Exact nCr)
+//==================================================
+
+// O(N^2)
+void initNCR() {
+    for (int i = 0; i <= NCR_MAX; i++) {
+        C[i][0] = C[i][i] = 1;
+
+        for (int j = 1; j < i; j++)
+            C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
+    }
+}
+
+//==================================================
+// Without Mod
+//==================================================
 
 // O(r)
 ll nCr(ll n, ll r) {
@@ -42,6 +68,13 @@ ll nCr(ll n, ll r) {
     return ans;
 }
 
+// O(1) after initNCR()
+// Works only for n <= NCR_MAX and values that fit in ll.
+ll nCrPrecomputed(int n, int r) {
+    if (r < 0 || r > n || n > NCR_MAX) return 0;
+    return C[n][r];
+}
+
 // O(r)
 ll nPr(ll n, ll r) {
     if (r < 0 || r > n) return 0;
@@ -53,7 +86,9 @@ ll nPr(ll n, ll r) {
     return ans;
 }
 
-//==================== Mod ====================
+//==================================================
+// Mod
+//==================================================
 
 // O(1)
 ll nCrMod(int n, int r) {
