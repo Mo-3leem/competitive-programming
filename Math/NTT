@@ -1,0 +1,158 @@
+using ll = long long;
+
+// ============================================================
+// Generic NTT + Primitive Root Generator
+
+// Common NTT-friendly primes:
+// MOD          Primitive Root    Maximum NTT Size
+// 998244353          3                2^23
+// 167772161          3                2^25
+// 469762049          3                2^26
+// 754974721          11               2^24
+// 1224736769         3                2^24
+
+// Complexity:
+// NTT:            O(n log n)
+// Multiplication: O((n + m) log(n + m))
+// Space:          O(n)
+
+
+// How to use:
+// Fastest option: use the known primitive root.
+// NTT::init(998244353, 3);
+// vector<ll> a = {1, 2, 3}, b = {4, 5};
+// vector<ll> result = NTT::multiply(a, b);
+
+namespace NTT {
+  ll MOD, ROOT;
+
+  // Complexity: O(log power)
+  ll power(ll base, ll power) {
+    ll result = 1;
+    base %= MOD;
+    while (power > 0) {
+      if (power & 1) {
+        result = result * base % MOD;
+      }
+      base = base * base % MOD;
+      power >>= 1;
+    }
+    return result;
+  }
+
+  // Complexity: O(log MOD)
+  ll inverse(ll x) {
+    return power(x, MOD - 2);
+  }
+
+  ll findPrimitiveRoot() {
+    ll phi = MOD - 1;
+    ll value = phi;
+    vector<ll> primeFactors;
+    for (ll p = 2; p * p <= value; p++) {
+      if (value % p != 0) continue;
+      primeFactors.push_back(p);
+      while (value % p == 0) value /= p;
+    }
+    if (value > 1) primeFactors.push_back(value);
+
+
+    for (ll candidate = 2; candidate < MOD; candidate++) {
+      bool valid = true;
+      for (ll prime: primeFactors) {
+        if (power(candidate, phi / prime) == 1) {
+          valid = false;
+          break;
+        }
+      }
+
+      if (valid) return candidate;
+    }
+
+    return -1;
+  }
+
+  // Initializes the NTT template.
+  void init(ll mod, ll primitiveRoot = -1) {
+    MOD = mod;
+    if (primitiveRoot == -1) ROOT = findPrimitiveRoot();
+    else ROOT = primitiveRoot;
+  }
+
+  // Complexity: O(n log n)
+  void ntt(vector<ll> &a, bool invert) {
+    int n = (int) a.size();
+    for (int i = 1, j = 0; i < n; i++) {
+      int bit = n >> 1;
+      while (j & bit) j ^= bit, bit >>= 1;
+      j ^= bit;
+      if (i < j) swap(a[i], a[j]);
+    }
+    for (int len = 2; len <= n; len <<= 1) {
+      ll rootOfUnity = power(ROOT, (MOD - 1) / len);
+      if (invert) rootOfUnity = inverse(rootOfUnity);
+      for (int start = 0; start < n; start += len) {
+        ll currentRoot = 1;
+        for (int j = 0; j < len / 2; j++) {
+          ll even = a[start + j];
+          ll odd = a[start + j + len / 2] * currentRoot % MOD;
+          a[start + j] = even + odd;
+          if (a[start + j] >= MOD) a[start + j] -= MOD;
+          a[start + j + len / 2] = even - odd;
+          if (a[start + j + len / 2] < 0) a[start + j + len / 2] += MOD;
+          currentRoot = currentRoot * rootOfUnity % MOD;
+        }
+      }
+    }
+
+    if (invert) {
+      ll inverseN = inverse(n);
+      for (ll &value: a) value = value * inverseN % MOD;
+    }
+  }
+
+  // O((n + m) log(n + m))
+  vector<ll> multiply(
+    vector<ll> a,
+    vector<ll> b
+  ) {
+    if (a.empty() || b.empty()) return {};
+
+    int resultSize = (int) a.size() + (int) b.size() - 1;
+    int n = 1;
+    while (n < resultSize) n <<= 1;
+    if ((MOD - 1) % n != 0)
+      throw invalid_argument("NTT size does not divide MOD - 1");
+
+
+    a.resize(n);
+    b.resize(n);
+
+    for (ll &value: a) {
+      value %= MOD;
+      if (value < 0) value += MOD;
+    }
+
+    for (ll &value: b) {
+      value %= MOD;
+      if (value < 0) value += MOD;
+    }
+
+    ntt(a, false);
+    ntt(b, false);
+
+    for (int i = 0; i < n; i++) a[i] = a[i] * b[i] % MOD;
+
+    ntt(a, true);
+    a.resize(resultSize);
+    return a;
+  }
+} // namespace NTT
+
+
+// Check if can I solve with NTT
+bool canNTT(long long mod, int resultSize) {
+  int needSize = 1;
+  while (needSize < resultSize) needSize <<= 1;
+  return (mod - 1) % needSize == 0;
+}
