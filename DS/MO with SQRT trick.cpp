@@ -1,9 +1,11 @@
 const int SQ, N;
+
 int blk[SQ + 1], frq[N + 1];
 
 struct Query {
   int l, r, iq;
 
+  // O(1)
   bool operator<(const Query &other) const {
     int n1 = l / SQ, n2 = other.l / SQ;
     if (n1 != n2) return n1 < n2;
@@ -11,6 +13,7 @@ struct Query {
   }
 };
 
+// O(1)
 void update(int val) {
   if (frq[val] == 1) {
     blk[val / SQ] += 1;
@@ -19,54 +22,72 @@ void update(int val) {
   }
 }
 
+// O(1)
 void add(int i) {
   i = arr[i];
   frq[i]++;
   update(i);
 }
 
+// O(1)
 void rem(int i) {
   i = arr[i];
   frq[i]--;
   update(i);
 }
 
+// O(sqrt(N))
 int getMax() {
   int idx = SQ - 1;
-  while (~idx && !blk[idx])--idx;
+  while (~idx && !blk[idx]) --idx;
+
   if (idx == -1) return 0; /// empty subarray
+
   idx = (idx + 1) * SQ - 1;
-  while (!frq[idx])--idx;
+  while (!frq[idx]) --idx;
+
   return idx;
 }
 
+// O(sqrt(N))
 int getMin() {
   int idx = 0;
   while (!blk[idx]) ++idx;
+
   idx *= SQ;
-  while (!frq[idx])++idx;
+  while (!frq[idx]) ++idx;
+
   return idx;
 }
 
+// O(sqrt(N))
 int getMex() {
   int idx = 0;
   while (blk[idx] == SQ) ++idx;
+
   idx *= SQ;
-  while (frq[idx])++idx;
+  while (frq[idx]) ++idx;
+
   return idx;
 }
 
-vector<int> MO(vector <Query> &queries) {
+// O(Q log Q + (N + Q) * sqrt(N))
+vector<int> MO(vector<Query> &queries) {
   sort(queries.begin(), queries.end());
+
   vector<int> res(queries.size());
+
   int l = queries[0].l, r = queries[0].l;
   add(l);
-  for (const auto &[lq, rq, iq]: queries) {
+
+  for (const auto &[lq, rq, iq] : queries) {
     while (r < rq) add(++r);
     while (l > lq) add(--l);
     while (r > rq) rem(r--);
     while (l < lq) rem(l++);
+
     res[iq] = getMex();
   }
+
   return res;
 }
