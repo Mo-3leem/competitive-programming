@@ -10,9 +10,6 @@ x | y = (x ^ y) + (x & y)
 x ^ y = (x | y) - (x & y)
 x ^ y = x + y - 2 * (x & y)
 
-x ^ x = 0
-x ^ 0 = x
-x ^ y ^ x = y
 ```
 
 ### No common bits
@@ -49,15 +46,6 @@ popcount           : __builtin_popcountll(x)
 all B bits         : (1LL << B) - 1
 complement B bits  : x ^ ((1LL << B) - 1)
 ```
-
-### Prefix XOR
-
-```cpp
-pref[i] = pref[i-1] ^ a[i]
-xor(l,r) = pref[r] ^ pref[l-1]
-```
-
----
 
 ## GCD / LCM / DIVISIBILITY
 
