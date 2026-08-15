@@ -1,3 +1,4 @@
+// val[flat[i]] = value of the node
 vector<int> flat(n);
 int timer = 0;
 vector<int> in(n), out(n);
