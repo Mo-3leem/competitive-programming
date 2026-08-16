@@ -1,7 +1,7 @@
 class Multiset {
 private:
-  //use with the positive number only and limited
-  // so if you have a big or non-positive number you have to compress them
+  // use with positive numbers only and limited
+  // if you have big or non-positive numbers, compress them
   vector<int> Bit;
   int SZ, size_set;
 
@@ -27,38 +27,48 @@ private:
   }
 
 public:
+  // Time: O(log SZ)
   Multiset() : size_set(0), SZ(1 << 20) {
     Bit.resize(SZ);
     add(0, -1);
   }
 
+  // Time: O(log SZ)
   void insert(int val) {
     ++size_set;
     add(val, 1);
   }
 
+  // Time: O(log SZ)
   int count(int val) {
     return get(val) - get(val - 1);
   }
 
-  /// erase all occurrence of val in the multiset
+  // Time: O(log SZ)
   void erase_all(int val) {
     int c = count(val);
     size_set -= c;
     add(val, -c);
   }
 
+  // Time: O(log SZ)
   void erase_idx(int index) {
     --size_set;
     add(BS(index), -1);
   }
 
-  int order_of_key(int val) {//get_val_idx //freq(numbers)<val
+  // Time: O(log SZ)
+  int order_of_key(int val) {
     return get(val) - count(val) + 1;
   }
 
-  int operator[](int index) { return BS(index); }
+  // Time: O(log SZ)
+  int operator[](int index) {
+    return BS(index);
+  }
 
-  int size() const { return size_set; }
-
+  // Time: O(1)
+  int size() const {
+    return size_set;
+  }
 };
